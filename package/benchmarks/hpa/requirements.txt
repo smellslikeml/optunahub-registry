@@ -1,0 +1,4 @@
+pandas
+scipy
+optunahub>=0.5
+optuna>=5.0

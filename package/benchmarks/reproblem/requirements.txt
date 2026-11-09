@@ -1,0 +1,2 @@
+optuna>=5.0
+optunahub>=0.5.0

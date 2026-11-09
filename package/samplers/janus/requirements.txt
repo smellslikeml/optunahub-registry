@@ -1,0 +1,5 @@
+optuna
+optunahub
+numpy
+torch
+evotorch

@@ -1,0 +1,82 @@
+---
+author: Optuna Team
+title: AutoSampler
+description: This sampler automatically chooses an appropriate built-in sampler for the provided objective function.
+tags: [sampler, automatic, automated]
+optuna_versions: [4.5.0]
+license: MIT License
+---
+
+## Abstract
+
+This package automatically selects an appropriate sampler for the provided search space based on the developers' recommendation. The following articles provide detailed information about AutoSampler. Please read the `Citation` section when you use `AutoSampler` in your project.
+
+- 📰 [AutoSampler: Automatic Selection of Optimization Algorithms in Optuna](https://medium.com/optuna/autosampler-automatic-selection-of-optimization-algorithms-in-optuna-1443875fd8f9)
+- 📰 [AutoSampler: Full Support for Multi-Objective & Constrained Optimization](https://medium.com/optuna/autosampler-full-support-for-multi-objective-constrained-optimization-c1c4fc957ba2)
+
+![Concept of AutoSampler](images/auto_sampler.png)
+
+## APIs
+
+- `AutoSampler(*, seed: int | None = None, constraints_func: Callable[[FrozenTrial], Sequence[float]] | None = None)`
+  - `seed`: Random seed to initialize internal random number generator. Defaults to None (a seed is picked randomly).
+  - `constraints_func`: An optional function that computes the objective constraints. It must take a `FrozenTrial` and return the constraints. The return value must be a sequence of `float`s. A value strictly larger than `0` means that a constraints is violated. A value equal to or smaller than `0` is considered feasible. If `constraints_func` returns more than one value for a trial, that trial is considered feasible if and only if all values are equal to `0` or smaller. The `constraints_func` will be evaluated after each successful trial.
+
+This sampler currently accepts only `seed` and `constraints_func`. These arguments follow the same convention as the other samplers, so please take a look at [the reference](https://optuna.readthedocs.io/en/stable/reference/samplers/generated/optuna.samplers.TPESampler.html).
+
+## Installation
+
+This sampler requires optional dependencies of Optuna.
+
+```shell
+$ pip install optunahub cmaes torch scipy
+```
+
+Note that since we may update the implementation of `AutoSampler`, it is highly encouraged to use the latest version of Optuna.
+
+## Example
+
+```python
+import optuna
+import optunahub
+
+
+def objective(trial):
+  x = trial.suggest_float("x", -5, 5)
+  y = trial.suggest_float("y", -5, 5)
+  return x**2 + y**2
+
+
+module = optunahub.load_module(package="samplers/auto_sampler")
+study = optuna.create_study(sampler=module.AutoSampler())
+study.optimize(objective, n_trials=300)
+```
+
+### Test
+
+To execute the tests for `AutoSampler`, please run the following commands. The test file is provided in the package. Please use `optuna>=4.8` to run the tests.
+
+```sh
+pip install pytest
+```
+
+```python
+pytest package/samplers/auto_sampler/tests/
+```
+
+## Citation
+
+Please cite [the OptunaHub paper](https://www.jmlr.org/papers/v27/25-2424.html) with the following format when you use `AutoSampler` in your project:
+
+```bibtex
+@article{ozaki2026optunahub,
+  title={{OptunaHub}: A Platform for Black-Box Optimization},
+  author={Ozaki, Yoshihiko and Watanabe, Shuhei and Yanase, Toshihiko},
+  journal={Journal of Machine Learning Research},
+  volume={27},
+  number={203},
+  pages={1--10},
+  year={2026},
+  url={https://www.jmlr.org/papers/v27/25-2424.html}
+}
+```
